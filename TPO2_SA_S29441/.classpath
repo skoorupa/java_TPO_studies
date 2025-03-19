@@ -6,5 +6,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/htmlunit-4.10.0-sources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/htmlunit-4.10.0"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/htmlunit-4.10.0-OSGi"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/javafx-swt"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

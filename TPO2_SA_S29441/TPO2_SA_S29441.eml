@@ -8,5 +8,6 @@
 		<level name="htmlunit-4.10.0-sources" value="project"/>
 		<level name="htmlunit-4.10.0" value="project"/>
 		<level name="htmlunit-4.10.0-OSGi" value="project"/>
+		<level name="javafx-swt" value="project"/>
 	</levels>
 </component>

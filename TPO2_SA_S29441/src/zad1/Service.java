@@ -7,6 +7,7 @@
 package zad1;
 
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.htmlunit.BrowserVersion;
@@ -32,6 +33,7 @@ public class Service {
     private Locale locale;
     private String kraj;
     private String zrodlowa_waluta;
+    private WeatherJSON weather;
     private static String weatherApi = "http://api.openweathermap.org/data/2.5/weather?q=%s,%s&units=metric&APPID=6940a577d4f80e42cee5060a835e7063";
     private static String exchangeApi = "https://v6.exchangerate-api.com/v6/5c166bca8974888e4bf19aa7/pair/%s/%s";
     private static String nbpTableA = "https://nbp.pl/statystyka-i-sprawozdawczosc/kursy/tabela-a/";
@@ -60,7 +62,11 @@ public class Service {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return new BufferedReader(new InputStreamReader(weatherInputStream)).lines().collect(Collectors.joining());
+        String weatherJSON = new BufferedReader(new InputStreamReader(weatherInputStream)).lines().collect(Collectors.joining());
+
+        Gson gson = new Gson();
+        weather = gson.fromJson(weatherJSON, WeatherJSON.class);
+        return weatherJSON;
     }
 
     public Double getRateFor(String kod_waluty) {
@@ -101,8 +107,6 @@ public class Service {
                 if (sourceRateTd.contains(zrodlowa_waluta)) {
                     int sourceRate = Integer.parseInt(sourceRateTd.replace(" "+zrodlowa_waluta,""));
                     double plnRate = Double.parseDouble(plnRateTd.replaceAll(",","."));
-                    System.out.println(sourceRate+": "+plnRate);
-                    System.out.println(plnRate/sourceRate);
                     return plnRate/sourceRate;
                 }
             }
@@ -112,4 +116,25 @@ public class Service {
 
         return 0d;
     }
+
+    public double getTemperature() {
+        return weather.main.temp;
+    }
+
+    public String getWeatherRaw() {
+        return weather.weather[0].main;
+    }
+}
+
+class WeatherJSON {
+    Weather[] weather;
+    WeatherMain main;
+}
+
+class Weather {
+    String main;
+}
+
+class WeatherMain {
+    double temp;
 }
