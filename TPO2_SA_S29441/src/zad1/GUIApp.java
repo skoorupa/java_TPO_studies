@@ -21,10 +21,10 @@ public class GUIApp extends JFrame {
     private JTextField temparatureField, weatherField, rateField, nbpRateField;
     private Service service;
     // wiki
-    private JFXPanel wikipediaPanel;
-    private WebView wikipediaView;
-    private WebEngine wikipediaEngine;
-    private Scene wikipediaScene;
+//    private JFXPanel wikipediaPanel;
+//    private WebView wikipediaView;
+//    private WebEngine wikipediaEngine;
+//    private Scene wikipediaScene;
 
     public GUIApp() {
         super("S_WEBCLIENTS");

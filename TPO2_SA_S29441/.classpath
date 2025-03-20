@@ -5,7 +5,6 @@
 	<classpathentry kind="lib" path="lib/gson-2.12.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/htmlunit-4.10.0-sources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/htmlunit-4.10.0"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/htmlunit-4.10.0-OSGi"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/javafx-swt"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/htmlunit-4.10.0-OSGi (2)"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

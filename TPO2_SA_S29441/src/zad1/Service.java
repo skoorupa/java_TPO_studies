@@ -89,7 +89,7 @@ public class Service {
             LogManager.getLogManager().reset();
             webClient.getOptions().setThrowExceptionOnScriptError(false);
             webClient.setJavaScriptErrorListener(new SilentJavaScriptErrorListener());
-            webClient.setCssErrorHandler(new SilentCssErrorHandler());
+//            webClient.setCssErrorHandler(new SilentCssErrorHandler());
 
             HtmlPage docA = webClient.getPage(nbpTableA);
             HtmlPage docB = webClient.getPage(nbpTableB);
