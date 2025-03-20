@@ -16,7 +16,7 @@ public class GUIApp extends JFrame {
     private JTextField countryField, cityField, currencyField;
     private JButton runButton;
     // output
-    private JPanel outputPanel, temparaturePanel, weatherPanel, ratePanel, nbpRatePanel;
+    private JPanel temparaturePanel, weatherPanel, ratePanel, nbpRatePanel;
     private JLabel temparatureLabel, weatherLabel, rateLabel, nbpRateLabel;
     private JTextField temparatureField, weatherField, rateField, nbpRateField;
     private Service service;
@@ -32,25 +32,25 @@ public class GUIApp extends JFrame {
         setSize(500,500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-//        setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
+        setLayout(new BorderLayout());
 
         setVisible(true);
 
         // INPUT
         inputPanel = new JPanel();
-        inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));
+        inputPanel.setLayout(new GridLayout(0,1));
 
-        countryPanel = new JPanel();
+        countryPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         countryLabel = new JLabel("Country:");
         countryField = new JTextField("Poland",15);
-        cityPanel = new JPanel();
+        cityPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         cityLabel = new JLabel("City:");
         cityField = new JTextField("Warsaw",15);
-        currencyPanel = new JPanel();
+        currencyPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         currencyLabel = new JLabel("Currency:");
         currencyField = new JTextField("USD",15);
 
-        runButtonPanel = new JPanel();
+        runButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         runButton = new JButton("Run");
         runButton.addActionListener(l -> showInfo());
 
@@ -67,28 +67,24 @@ public class GUIApp extends JFrame {
         inputPanel.add(currencyPanel);
         inputPanel.add(runButtonPanel);
 
-        add(inputPanel, BorderLayout.NORTH);
-
         // OUTPUT
-        outputPanel = new JPanel();
-        outputPanel.setLayout(new BoxLayout(outputPanel, BoxLayout.Y_AXIS));
 
-        temparaturePanel = new JPanel();
+        temparaturePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         temparatureLabel = new JLabel("Temperature:");
         temparatureField = new JTextField(15);
         temparatureField.setEditable(false);
 
-        weatherPanel = new JPanel();
+        weatherPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         weatherLabel = new JLabel("Weather:");
         weatherField = new JTextField(15);
         weatherField.setEditable(false);
 
-        ratePanel = new JPanel();
+        ratePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         rateLabel = new JLabel("Rate:");
         rateField = new JTextField(15);
         rateField.setEditable(false);
 
-        nbpRatePanel = new JPanel();
+        nbpRatePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         nbpRateLabel = new JLabel("NBP rate:");
         nbpRateField = new JTextField(15);
         nbpRateField.setEditable(false);
@@ -102,14 +98,12 @@ public class GUIApp extends JFrame {
         nbpRatePanel.add(nbpRateLabel);
         nbpRatePanel.add(nbpRateField);
 
-        outputPanel.add(temparaturePanel);
-        outputPanel.add(weatherPanel);
-        outputPanel.add(ratePanel);
-        outputPanel.add(nbpRatePanel);
-        outputPanel.add(Box.createVerticalGlue());
+        inputPanel.add(temparaturePanel);
+        inputPanel.add(weatherPanel);
+        inputPanel.add(ratePanel);
+        inputPanel.add(nbpRatePanel);
 
-        outputPanel.setVisible(false);
-        add(outputPanel, BorderLayout.CENTER);
+        add(inputPanel, BorderLayout.NORTH);
 
 //        Platform.runLater(()->{
 //            wikipediaPanel = new JFXPanel();
@@ -138,7 +132,5 @@ public class GUIApp extends JFrame {
         nbpRateField.setText(Double.toString(rate2));
 
 //        wikipediaEngine.load("https://en.wikipedia.org/wiki/"+cityField.getText());
-
-        outputPanel.setVisible(true);
     }
 }

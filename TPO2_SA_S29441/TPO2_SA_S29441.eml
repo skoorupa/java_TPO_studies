@@ -4,9 +4,4 @@
 	<lib name="gson-2.12.1.jar" scope="COMPILE">
 		<relative-module-cls project-related="jar://$PROJECT_DIR$/lib/gson-2.12.1.jar!/"/>
 	</lib>
-	<levels>
-		<level name="htmlunit-4.10.0-sources" value="project"/>
-		<level name="htmlunit-4.10.0" value="project"/>
-		<level name="htmlunit-4.10.0-OSGi (2)" value="project"/>
-	</levels>
 </component>

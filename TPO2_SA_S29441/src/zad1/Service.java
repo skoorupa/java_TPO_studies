@@ -10,23 +10,15 @@ package zad1;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.htmlunit.BrowserVersion;
-import org.htmlunit.SilentCssErrorHandler;
-import org.htmlunit.WebClient;
-import org.htmlunit.html.DomNode;
-import org.htmlunit.html.DomNodeList;
-import org.htmlunit.html.HtmlPage;
-import org.htmlunit.javascript.SilentJavaScriptErrorListener;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.*;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class Service {
@@ -34,11 +26,12 @@ public class Service {
     private String kraj;
     private String zrodlowa_waluta;
     private WeatherJSON weather;
+    private NBPJSON nbpjson;
     private static String weatherApi = "http://api.openweathermap.org/data/2.5/weather?q=%s,%s&units=metric&APPID=6940a577d4f80e42cee5060a835e7063";
-    private static String exchangeApi = "https://v6.exchangerate-api.com/v6/5c166bca8974888e4bf19aa7/pair/%s/%s";
-    private static String nbpTableA = "https://nbp.pl/statystyka-i-sprawozdawczosc/kursy/tabela-a/";
-    private static String nbpTableB = "https://nbp.pl/statystyka-i-sprawozdawczosc/kursy/tabela-b/";
-    private static String nbpTableC = "https://nbp.pl/statystyka-i-sprawozdawczosc/kursy/tabela-c/";
+    private static String rateApi = "https://v6.exchangerate-api.com/v6/5c166bca8974888e4bf19aa7/pair/%s/%s";
+    private static String nbpTableA = "https://api.nbp.pl/api/exchangerates/rates/a/%s/last/1?format=json";
+    private static String nbpTableB = "https://api.nbp.pl/api/exchangerates/rates/b/%s/last/1?format=json";
+    private static String nbpTableC = "https://api.nbp.pl/api/exchangerates/rates/c/%s/last/1?format=json";
 
     public Service(String kraj) {
         this.kraj = kraj;
@@ -70,13 +63,13 @@ public class Service {
     }
 
     public Double getRateFor(String kod_waluty) {
-        InputStream exchangeInputStream;
+        InputStream rateInputStream;
         try {
-            exchangeInputStream = new URL(String.format(exchangeApi, zrodlowa_waluta, kod_waluty)).openConnection().getInputStream();
+            rateInputStream = new URL(String.format(rateApi, zrodlowa_waluta, kod_waluty)).openConnection().getInputStream();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        String jsonString = new BufferedReader(new InputStreamReader(exchangeInputStream)).lines().collect(Collectors.joining());
+        String jsonString = new BufferedReader(new InputStreamReader(rateInputStream)).lines().collect(Collectors.joining());
         JsonObject jsonObject = JsonParser.parseString(jsonString).getAsJsonObject();
         return jsonObject.get("conversion_rate").getAsDouble();
     }
@@ -85,36 +78,26 @@ public class Service {
         if(zrodlowa_waluta.equals("PLN"))
             return 1d;
 
-        try (WebClient webClient = new WebClient(BrowserVersion.CHROME)) {
-            LogManager.getLogManager().reset();
-            webClient.getOptions().setThrowExceptionOnScriptError(false);
-            webClient.setJavaScriptErrorListener(new SilentJavaScriptErrorListener());
-//            webClient.setCssErrorHandler(new SilentCssErrorHandler());
+        InputStream nbpRateAInputStream, nbpRateBInputStream;
+        try {
+            HttpURLConnection nbpRateAConnection = (HttpURLConnection) new URL(String.format(nbpTableA, zrodlowa_waluta)).openConnection();
+            HttpURLConnection nbpRateBConnection = (HttpURLConnection) new URL(String.format(nbpTableB, zrodlowa_waluta)).openConnection();
 
-            HtmlPage docA = webClient.getPage(nbpTableA);
-            HtmlPage docB = webClient.getPage(nbpTableB);
-
-            ArrayList<DomNode> rows = new ArrayList<>();
-            DomNodeList<DomNode> rowsA = docA.querySelectorAll(".main-container tbody tr");
-            DomNodeList<DomNode> rowsB = docB.querySelectorAll(".main-container tbody tr");
-            rows.addAll(rowsA);
-            rows.addAll(rowsB);
-
-            for (DomNode tr : rows) {
-                DomNodeList<DomNode> tds = tr.querySelectorAll("td");
-                String sourceRateTd = tds.get(1).getTextContent();
-                String plnRateTd = tds.get(2).getTextContent();
-                if (sourceRateTd.contains(zrodlowa_waluta)) {
-                    int sourceRate = Integer.parseInt(sourceRateTd.replace(" "+zrodlowa_waluta,""));
-                    double plnRate = Double.parseDouble(plnRateTd.replaceAll(",","."));
-                    return plnRate/sourceRate;
-                }
+            String nbpRateJSON;
+            if (nbpRateAConnection.getResponseCode() != 404) {
+                nbpRateAInputStream = nbpRateAConnection.getInputStream();
+                nbpRateJSON = new BufferedReader(new InputStreamReader(nbpRateAInputStream)).lines().collect(Collectors.joining());
+            } else {
+                nbpRateBInputStream = nbpRateBConnection.getInputStream();
+                nbpRateJSON = new BufferedReader(new InputStreamReader(nbpRateBInputStream)).lines().collect(Collectors.joining());
             }
-        } catch (IOException e) {
-            System.out.println("nie udało się połączyć z NBP");
-        }
 
-        return 0d;
+            Gson gson = new Gson();
+            nbpjson = gson.fromJson(nbpRateJSON, NBPJSON.class);
+            return nbpjson.rates[0].mid;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public double getTemperature() {
@@ -125,6 +108,8 @@ public class Service {
         return weather.weather[0].main;
     }
 }
+
+// WEATHER
 
 class WeatherJSON {
     Weather[] weather;
@@ -137,4 +122,14 @@ class Weather {
 
 class WeatherMain {
     double temp;
+}
+
+// NBP
+
+class NBPJSON {
+    Rate[] rates;
+}
+
+class Rate {
+    double mid;
 }
