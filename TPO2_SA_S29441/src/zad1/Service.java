@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 public class Service {
     private Locale locale;
     private String kraj;
+    private String krajCode;
     private String zrodlowa_waluta;
     private WeatherJSON weather;
     private NBPJSON nbpjson;
@@ -44,6 +45,7 @@ public class Service {
             throw new NullPointerException();
 
         locale = localeOptional.get();
+        krajCode = locale.getCountry();
 
         zrodlowa_waluta = Currency.getInstance(locale).getCurrencyCode();
     }
@@ -51,7 +53,7 @@ public class Service {
     public String getWeather(String miasto) {
         InputStream weatherInputStream;
         try {
-            weatherInputStream = new URL(String.format(weatherApi, miasto, kraj)).openConnection().getInputStream();
+            weatherInputStream = new URL(String.format(weatherApi, miasto, krajCode)).openConnection().getInputStream();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
