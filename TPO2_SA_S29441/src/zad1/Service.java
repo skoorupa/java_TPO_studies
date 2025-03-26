@@ -73,7 +73,9 @@ public class Service {
         }
         String jsonString = new BufferedReader(new InputStreamReader(rateInputStream)).lines().collect(Collectors.joining());
         JsonObject jsonObject = JsonParser.parseString(jsonString).getAsJsonObject();
-        return jsonObject.get("conversion_rate").getAsDouble();
+
+        double output = jsonObject.get("conversion_rate").getAsDouble();
+        return output;
     }
 
     public Double getNBPRate() {
@@ -96,7 +98,9 @@ public class Service {
 
             Gson gson = new Gson();
             nbpjson = gson.fromJson(nbpRateJSON, NBPJSON.class);
-            return nbpjson.rates[0].mid;
+
+            double output = nbpjson.rates[0].mid;
+            return output;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
