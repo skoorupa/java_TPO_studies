@@ -15,8 +15,12 @@ import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class ChatClient extends Thread {
+    private Lock lock = new ReentrantLock();
     private StringBuffer log;
     private String host;
     private int port;
@@ -50,13 +54,16 @@ public class ChatClient extends Thread {
     }
 
     public void logout() {
+        System.out.println(id+" logging out");
         try {
             callServer(CallMethod.LOGOUT,id);
-            socket.shutdownOutput();
-            socket.close();
+            addLog(id+" logged out");
+            lock.lock();
             interrupt();
         } catch (Exception e) {
             logException(e);
+        } finally {
+            lock.unlock();
         }
     }
 
@@ -77,8 +84,9 @@ public class ChatClient extends Thread {
         StringBuffer sb = new StringBuffer();
 
         int readBytes = 0;
-        while (!isInterrupted() && socket.isOpen()) {
+        while (!isInterrupted()) {
             try {
+                lock.lock();
                 readBytes = socket.read(inBuf);
                 if (readBytes > 0) {
                     inBuf.flip();
@@ -94,6 +102,8 @@ public class ChatClient extends Thread {
                 break;
             } catch (Exception e) {
                 logException(e);
+            } finally {
+                lock.unlock();
             }
 
             String response = sb.toString();

@@ -20,6 +20,9 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,6 +31,7 @@ import static java.nio.channels.SelectionKey.OP_WRITE;
 // multipleksowania kanałów gniazd (użycie selektora),
 // serwer może obsługiwać równolegle wielu klientów, ale obsługa żądań klientów odbywa się w jednym wątku,
 public class ChatServer extends Thread {
+    private Lock lock = new ReentrantLock();
     private StringBuffer log;
     private String host;
     private int port;
@@ -59,11 +63,13 @@ public class ChatServer extends Thread {
 
     // zatrzymuje serwer i wątek, w którym działa
     public void stopServer() throws IOException {
+        lock.lock();
         interrupt();
         selector.wakeup();
         selector.close();
         server.close();
         System.out.println("Server stopped");
+        lock.unlock();
     }
 
     public void run() {
@@ -132,9 +138,8 @@ public class ChatServer extends Thread {
 
         addLog(timestamp+" "+response);
         for (SocketChannel socket : allClients.keySet()) {
-            if (socket.isOpen()) {
-                socket.write(charset.encode(response+'\n'));
-            }
+//            if (socket.isOpen())
+                socket.write(charset.encode(response + '\n'));
         }
     }
 
