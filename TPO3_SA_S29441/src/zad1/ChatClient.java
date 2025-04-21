@@ -54,7 +54,6 @@ public class ChatClient extends Thread {
     }
 
     public void logout() {
-        System.out.println(id+" logging out");
         try {
             callServer(CallMethod.LOGOUT,id);
             addLog(id+" logged out");
@@ -95,9 +94,8 @@ public class ChatClient extends Thread {
                         char c = cb.get();
                         if (c != '\n') sb.append(c);
                     }
-                } else if (readBytes == -1) {
+                } else if (readBytes == -1)
                     break;
-                }
             } catch (AsynchronousCloseException e) {
                 break;
             } catch (Exception e) {
@@ -116,14 +114,12 @@ public class ChatClient extends Thread {
         }
     }
 
-    // nieblokujące wejście - wyjście
     public String getChatView() {
         return log.toString();
     }
 
     private void logException(Exception e) {
         addLog("*** "+e.toString());
-        e.printStackTrace();
     }
 
     private void addLog(String msg) {
