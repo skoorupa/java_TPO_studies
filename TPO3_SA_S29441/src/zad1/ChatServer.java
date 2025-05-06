@@ -8,7 +8,6 @@ package zad1;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.SelectionKey;
@@ -22,7 +21,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -57,7 +55,7 @@ public class ChatServer extends Thread {
         server.configureBlocking(false);
         selector = Selector.open();
         selectionKey = server.register(selector, SelectionKey.OP_ACCEPT);
-        System.out.println("Server started");
+        System.out.println("Server started\n");
         start();
     }
 
@@ -169,7 +167,7 @@ public class ChatServer extends Thread {
     }
 
     private void addLog(String msg) {
-        log.append(msg).append("\n");
+        log.append(msg+"\n");
     }
 
     // zwraca log serwera

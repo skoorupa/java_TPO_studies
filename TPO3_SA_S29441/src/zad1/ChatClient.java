@@ -15,6 +15,8 @@ import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -92,7 +94,8 @@ public class ChatClient extends Thread {
                     CharBuffer cb = charset.decode(inBuf);
                     while (cb.hasRemaining()) {
                         char c = cb.get();
-                        if (c != '\n') sb.append(c);
+                        if (c != '\n' || cb.hasRemaining())
+                            sb.append(c);
                     }
                 } else if (readBytes == -1)
                     break;
@@ -106,7 +109,7 @@ public class ChatClient extends Thread {
 
             String response = sb.toString();
             if (!response.trim().isEmpty()) {
-                log.append(response + '\n');
+                addLog(response);
                 sb.setLength(0);
             }
 
@@ -123,6 +126,6 @@ public class ChatClient extends Thread {
     }
 
     private void addLog(String msg) {
-        log.append(msg).append("\n");
+        log.append(msg+"\n");
     }
 }
