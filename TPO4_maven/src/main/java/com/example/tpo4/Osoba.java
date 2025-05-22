@@ -3,17 +3,17 @@ package com.example.tpo4;
 import java.sql.Date;
 
 public class Osoba {
-    private int ID;
+    private int id;
     private String imie;
     private String nazwisko;
     private Date data_urodzenia;
 
-    public int getID() {
-        return ID;
+    public int getId() {
+        return id;
     }
 
-    public void setID(int ID) {
-        this.ID = ID;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getImie() {
