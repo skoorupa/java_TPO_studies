@@ -49,9 +49,9 @@ public class OsobaDAO {
         return getById(osoba.getId());
     }
 
-    public Osoba update(Osoba osoba) {
-        jdbcTemplate.update("UPDATE OSOBA SET IMIE = ?, NAZWISKO = ?, DATA_URODZENIA = ? WHERE id = ?",
-                osoba.getImie(), osoba.getNazwisko(), osoba.getData_urodzenia(), osoba.getId());
+    public Osoba update(int id, Osoba osoba) {
+        jdbcTemplate.update("UPDATE OSOBA SET ID = ?, IMIE = ?, NAZWISKO = ?, DATA_URODZENIA = ? WHERE id = ?",
+                osoba.getId(), osoba.getImie(), osoba.getNazwisko(), osoba.getData_urodzenia(), id);
         return getById(osoba.getId());
     }
 

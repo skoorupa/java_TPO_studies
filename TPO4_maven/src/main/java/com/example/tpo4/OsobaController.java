@@ -20,6 +20,11 @@ public class OsobaController {
         return osobaDAO.getAll();
     }
 
+    @GetMapping("/data/{id}")
+    public Osoba getById(@PathVariable int id) {
+        return osobaDAO.getById(id);
+    }
+
     @PostMapping("/data")
     public ResponseEntity<Osoba> create(@RequestBody Osoba osoba) {
         Osoba saved = osobaDAO.save(osoba);
@@ -28,8 +33,7 @@ public class OsobaController {
 
     @PutMapping("/data/{id}")
     public ResponseEntity<Osoba> update(@PathVariable int id, @RequestBody Osoba osoba) {
-        osoba.setId(id);
-        Osoba updated = osobaDAO.update(osoba);
+        Osoba updated = osobaDAO.update(id, osoba);
         return ResponseEntity.ok(updated);
     }
 
