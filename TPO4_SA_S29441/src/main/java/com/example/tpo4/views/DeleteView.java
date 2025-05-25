@@ -41,6 +41,7 @@ public class DeleteView extends VerticalLayout implements BeforeEnterObserver {
         grid.addColumn(Osoba::getNazwisko).setHeader("Nazwisko");
         grid.addColumn(o -> o.getData_urodzenia() != null ? o.getData_urodzenia().toLocalDate().toString() : "")
                 .setHeader("Data urodzenia");
+        grid.addColumn(Osoba::getNumer_telefonu).setHeader("Numer telefonu");
 
         add(grid);
     }

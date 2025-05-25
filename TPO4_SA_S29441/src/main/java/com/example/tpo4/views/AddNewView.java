@@ -31,6 +31,7 @@ public class AddNewView extends VerticalLayout {
     private final TextField imieField = new TextField("Imię");
     private final TextField nazwiskoField = new TextField("Nazwisko");
     private final DatePicker dataUrodzeniaPicker = new DatePicker("Data urodzenia");
+    private final TextField numerTelefonuField = new TextField("Numer telefonu");
 
     private final Button saveButton = new Button("Dodaj");
     private final Button cancelButton = new Button("Anuluj");
@@ -42,8 +43,9 @@ public class AddNewView extends VerticalLayout {
         imieField.setRequired(true);
         nazwiskoField.setRequired(true);
         dataUrodzeniaPicker.setRequired(true);
+        numerTelefonuField.setRequired(true);
 
-        add(idField, imieField, nazwiskoField, dataUrodzeniaPicker,
+        add(idField, imieField, nazwiskoField, dataUrodzeniaPicker, numerTelefonuField,
                 new HorizontalLayout(saveButton, cancelButton));
 
         saveButton.addClickListener(e -> addOsoba());
@@ -51,7 +53,7 @@ public class AddNewView extends VerticalLayout {
     }
 
     private void addOsoba() {
-        if (idField.isEmpty() || imieField.isEmpty() || nazwiskoField.isEmpty() || dataUrodzeniaPicker.isEmpty()) {
+        if (idField.isEmpty() || imieField.isEmpty() || nazwiskoField.isEmpty() || dataUrodzeniaPicker.isEmpty() || numerTelefonuField.isEmpty()) {
             Notification.show("Wszystkie pola są wymagane.");
             return;
         }
@@ -61,6 +63,7 @@ public class AddNewView extends VerticalLayout {
         osoba.setImie(imieField.getValue());
         osoba.setNazwisko(nazwiskoField.getValue());
         osoba.setData_urodzenia(Date.valueOf(dataUrodzeniaPicker.getValue()));
+        osoba.setNumer_telefonu(numerTelefonuField.getValue());
 
         try {
             Osoba wynik = webClient.post()

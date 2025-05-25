@@ -7,6 +7,7 @@ public class Osoba {
     private String imie;
     private String nazwisko;
     private Date data_urodzenia;
+    private String numer_telefonu;
 
     public int getId() {
         return id;
@@ -38,5 +39,13 @@ public class Osoba {
 
     public void setData_urodzenia(Date data_urodzenia) {
         this.data_urodzenia = data_urodzenia;
+    }
+
+    public String getNumer_telefonu() {
+        return numer_telefonu;
+    }
+
+    public void setNumer_telefonu(String numer_telefonu) {
+        this.numer_telefonu = numer_telefonu;
     }
 }

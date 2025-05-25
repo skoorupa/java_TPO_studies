@@ -41,7 +41,7 @@ public class HomeView extends VerticalLayout {
                 .block();
 
         grid.setItems(osobaList);
-        grid.setColumns("id", "imie", "nazwisko", "data_urodzenia");
+        grid.setColumns("id", "imie", "nazwisko", "data_urodzenia", "numer_telefonu");
         grid.addComponentColumn(osoba -> {
             HorizontalLayout horizontalLayout = new HorizontalLayout();
             Button editButton = new Button("Edytuj");

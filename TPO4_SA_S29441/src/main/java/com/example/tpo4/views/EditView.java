@@ -34,6 +34,7 @@ public class EditView extends VerticalLayout implements BeforeEnterObserver {
     private final TextField imieField = new TextField("Imię");
     private final TextField nazwiskoField = new TextField("Nazwisko");
     private final DatePicker dataUrodzeniaPicker = new DatePicker("Data urodzenia");
+    private final TextField numerTelefonuField = new TextField("Numer telefonu");
 
     private final Button saveButton = new Button("Zapisz");
     private final Button cancelButton = new Button("Anuluj");
@@ -47,8 +48,9 @@ public class EditView extends VerticalLayout implements BeforeEnterObserver {
         imieField.setRequired(true);
         nazwiskoField.setRequired(true);
         dataUrodzeniaPicker.setRequired(true);
+        numerTelefonuField.setRequired(true);
 
-        add(idField, imieField, nazwiskoField, dataUrodzeniaPicker,
+        add(idField, imieField, nazwiskoField, dataUrodzeniaPicker, numerTelefonuField,
                 new HorizontalLayout(saveButton, cancelButton));
 
         saveButton.addClickListener(e -> save());
@@ -72,12 +74,13 @@ public class EditView extends VerticalLayout implements BeforeEnterObserver {
                 imieField.setValue(osoba.getImie());
                 nazwiskoField.setValue(osoba.getNazwisko());
                 dataUrodzeniaPicker.setValue(osoba.getData_urodzenia().toLocalDate());
+                numerTelefonuField.setValue(osoba.getNumer_telefonu());
             }
         }
     }
 
     private void save() {
-        if (idField.isEmpty() || imieField.isEmpty() || nazwiskoField.isEmpty() || dataUrodzeniaPicker.isEmpty()) {
+        if (idField.isEmpty() || imieField.isEmpty() || nazwiskoField.isEmpty() || dataUrodzeniaPicker.isEmpty() || numerTelefonuField.isEmpty()) {
             Notification.show("Wszystkie pola są wymagane.");
             return;
         }
@@ -87,6 +90,7 @@ public class EditView extends VerticalLayout implements BeforeEnterObserver {
         osoba.setImie(imieField.getValue());
         osoba.setNazwisko(nazwiskoField.getValue());
         osoba.setData_urodzenia(Date.valueOf(dataUrodzeniaPicker.getValue()));
+        osoba.setNumer_telefonu(numerTelefonuField.getValue());
 
         Osoba wynik = webClient.put()
                 .uri("/data/" + id)
