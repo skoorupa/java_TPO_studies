@@ -52,21 +52,27 @@ public class DeleteView extends VerticalLayout implements BeforeEnterObserver {
         if (idParam.isPresent()) {
             id = Integer.parseInt(idParam.get());
 
-            Optional<Osoba> osobaOptional = webClient.get()
-                    .uri("/data/" + id)
-                    .retrieve()
-                    .bodyToMono(Osoba.class).blockOptional();
+            Osoba osoba = null;
+            try {
+                osoba = webClient.get()
+                        .uri("/data/" + id)
+                        .retrieve()
+                        .bodyToMono(Osoba.class).block();
+            } catch (WebClientResponseException.NotFound e) {
+                Notification.show("Nie znaleziono osoby o id="+id);
+                event.forwardTo(HomeView.class);
+                return;
+            }
 
-            if (osobaOptional.isPresent()) {
-                Osoba osoba = osobaOptional.get();
+            if (osoba != null) {
                 grid.setItems(osoba);
             } else {
-                Notification.show("Nie znaleziono osoby.");
-                UI.getCurrent().navigate("");
+                Notification.show("Nie znaleziono osoby o id="+id);
+                event.forwardTo(HomeView.class);
             }
         } else {
             Notification.show("Brak ID w adresie.");
-            UI.getCurrent().navigate("");
+            event.forwardTo(HomeView.class);
         }
     }
 
