@@ -1,6 +1,10 @@
-package com.example.tpo4;
+package com.example.tpo4.dao;
 
+import com.example.tpo4.exceptions.OsobaNotFoundException;
+import com.example.tpo4.models.Osoba;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -22,14 +26,14 @@ public class OsobaDAO {
                     osoba.setImie(rs.getString("IMIE"));
                     osoba.setNazwisko(rs.getString("NAZWISKO"));
                     osoba.setData_urodzenia(rs.getDate("DATA_URODZENIA"));
-                    osoba.setNumer_telefonu(rs.getString("NR_TELEFONU"));
+                    osoba.setNr_telefonu(rs.getString("NR_TELEFONU"));
                     return osoba;
                 }
         );
     }
 
     public Osoba getById(int id) {
-        return jdbcTemplate.queryForObject(
+         var obj = jdbcTemplate.queryForObject(
                 "SELECT ID, IMIE, NAZWISKO, DATA_URODZENIA, NR_TELEFONU FROM OSOBA WHERE ID = "+id,
                 (rs, rowNum) -> {
                     Osoba osoba = new Osoba();
@@ -37,27 +41,39 @@ public class OsobaDAO {
                     osoba.setImie(rs.getString("IMIE"));
                     osoba.setNazwisko(rs.getString("NAZWISKO"));
                     osoba.setData_urodzenia(rs.getDate("DATA_URODZENIA"));
-                    osoba.setNumer_telefonu(rs.getString("NR_TELEFONU"));
+                    osoba.setNr_telefonu(rs.getString("NR_TELEFONU"));
                     return osoba;
                 }
         );
+//         if (obj != null)
+             return obj;
+//         else throw new OsobaNotFoundException(id);
     }
 
     public Osoba save(Osoba osoba) {
-        jdbcTemplate.update(
-                "INSERT INTO OSOBA (ID, IMIE, NAZWISKO, DATA_URODZENIA, NR_TELEFONU) VALUES (?,?,?,?,?)",
-                osoba.getId(), osoba.getImie(), osoba.getNazwisko(), osoba.getData_urodzenia(), osoba.getNumer_telefonu()
-        );
-        return getById(osoba.getId());
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(con -> {
+            var ps = con.prepareStatement("INSERT INTO OSOBA (IMIE, NAZWISKO, DATA_URODZENIA, NR_TELEFONU) VALUES (?,?,?,?)", new String[] { "ID" });
+            ps.setString(1, osoba.getImie());
+            ps.setString(2, osoba.getNazwisko());
+            ps.setDate(3, osoba.getData_urodzenia());
+            ps.setString(4, osoba.getNr_telefonu());
+            return ps;
+        }, keyHolder);
+
+        return getById(keyHolder.getKey().intValue());
     }
 
     public Osoba update(int id, Osoba osoba) {
-        jdbcTemplate.update("UPDATE OSOBA SET ID = ?, IMIE = ?, NAZWISKO = ?, DATA_URODZENIA = ?, NR_TELEFONU = ? WHERE id = ?",
-                osoba.getId(), osoba.getImie(), osoba.getNazwisko(), osoba.getData_urodzenia(), osoba.getNumer_telefonu(), id);
-        return getById(osoba.getId());
+        getById(id);
+        jdbcTemplate.update("UPDATE OSOBA SET IMIE = ?, NAZWISKO = ?, DATA_URODZENIA = ?, NR_TELEFONU = ? WHERE id = ?",
+                osoba.getImie(), osoba.getNazwisko(), osoba.getData_urodzenia(), osoba.getNr_telefonu(), id);
+        return getById(id);
     }
 
     public void delete(int id) {
+        getById(id);
         jdbcTemplate.update("DELETE FROM OSOBA WHERE ID = ?", id);
     }
 }

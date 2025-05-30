@@ -1,28 +1,21 @@
 package com.example.tpo4.views;
 
-import com.example.tpo4.Osoba;
-import com.example.tpo4.OsobaDAO;
+import com.example.tpo4.models.Osoba;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.datepicker.DatePicker;
-import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.sql.Date;
-import java.util.List;
 import java.util.Optional;
 
 @Route("/edit/:id")
@@ -30,7 +23,6 @@ import java.util.Optional;
 public class EditView extends VerticalLayout implements BeforeEnterObserver {
     private final WebClient webClient = WebClient.create("http://localhost:8080/");
 
-    private final NumberField idField = new NumberField("ID");
     private final TextField imieField = new TextField("Imię");
     private final TextField nazwiskoField = new TextField("Nazwisko");
     private final DatePicker dataUrodzeniaPicker = new DatePicker("Data urodzenia");
@@ -44,13 +36,11 @@ public class EditView extends VerticalLayout implements BeforeEnterObserver {
     public EditView() {
         add(new H2("Edytuj osobę"));
 
-        idField.setRequired(true);
         imieField.setRequired(true);
         nazwiskoField.setRequired(true);
-        dataUrodzeniaPicker.setRequired(true);
         numerTelefonuField.setRequired(true);
 
-        add(idField, imieField, nazwiskoField, dataUrodzeniaPicker, numerTelefonuField,
+        add(imieField, nazwiskoField, dataUrodzeniaPicker, numerTelefonuField,
                 new HorizontalLayout(saveButton, cancelButton));
 
         saveButton.addClickListener(e -> save());
@@ -63,34 +53,40 @@ public class EditView extends VerticalLayout implements BeforeEnterObserver {
         if (idParam.isPresent()) {
             id = Integer.parseInt(idParam.get());
 
-            Osoba osoba = webClient.get()
+            Optional<Osoba> osobaOptional = webClient.get()
                     .uri("/data/" + id)
                     .retrieve()
-                    .bodyToMono(Osoba.class)
-                    .block();
+                    .bodyToMono(Osoba.class).blockOptional();
 
-            if (osoba != null) {
-                idField.setValue((double) osoba.getId());
+            if (osobaOptional.isPresent()) {
+                Osoba osoba = osobaOptional.get();
                 imieField.setValue(osoba.getImie());
                 nazwiskoField.setValue(osoba.getNazwisko());
-                dataUrodzeniaPicker.setValue(osoba.getData_urodzenia().toLocalDate());
-                numerTelefonuField.setValue(osoba.getNumer_telefonu());
+                if (osoba.getData_urodzenia() != null)
+                    dataUrodzeniaPicker.setValue(osoba.getData_urodzenia().toLocalDate());
+                numerTelefonuField.setValue(osoba.getNr_telefonu());
+            } else {
+                Notification.show("Nie znaleziono osoby o id="+id);
+                UI.getCurrent().navigate("");
             }
+        } else {
+            Notification.show("Brak ID w adresie.");
+            UI.getCurrent().navigate("");
         }
     }
 
     private void save() {
-        if (idField.isEmpty() || imieField.isEmpty() || nazwiskoField.isEmpty() || dataUrodzeniaPicker.isEmpty() || numerTelefonuField.isEmpty()) {
+        if (imieField.isEmpty() || nazwiskoField.isEmpty() || numerTelefonuField.isEmpty()) {
             Notification.show("Wszystkie pola są wymagane.");
             return;
         }
 
         Osoba osoba = new Osoba();
-        osoba.setId(idField.getValue().intValue());
         osoba.setImie(imieField.getValue());
         osoba.setNazwisko(nazwiskoField.getValue());
-        osoba.setData_urodzenia(Date.valueOf(dataUrodzeniaPicker.getValue()));
-        osoba.setNumer_telefonu(numerTelefonuField.getValue());
+        if (dataUrodzeniaPicker.getValue() != null)
+            osoba.setData_urodzenia(Date.valueOf(dataUrodzeniaPicker.getValue()));
+        osoba.setNr_telefonu(numerTelefonuField.getValue());
 
         Osoba wynik = webClient.put()
                 .uri("/data/" + id)

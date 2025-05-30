@@ -1,12 +1,10 @@
 package com.example.tpo4.views;
 
-import com.example.tpo4.Osoba;
-import com.example.tpo4.OsobaDAO;
+import com.example.tpo4.models.Osoba;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
@@ -41,7 +39,7 @@ public class HomeView extends VerticalLayout {
                 .block();
 
         grid.setItems(osobaList);
-        grid.setColumns("id", "imie", "nazwisko", "data_urodzenia", "numer_telefonu");
+        grid.setColumns("id", "imie", "nazwisko", "data_urodzenia", "nr_telefonu");
         grid.addComponentColumn(osoba -> {
             HorizontalLayout horizontalLayout = new HorizontalLayout();
             Button editButton = new Button("Edytuj");

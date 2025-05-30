@@ -1,4 +1,4 @@
-package com.example.tpo4;
+package com.example.tpo4.models;
 
 import java.sql.Date;
 
@@ -7,7 +7,7 @@ public class Osoba {
     private String imie;
     private String nazwisko;
     private Date data_urodzenia;
-    private String numer_telefonu;
+    private String nr_telefonu;
 
     public int getId() {
         return id;
@@ -41,11 +41,11 @@ public class Osoba {
         this.data_urodzenia = data_urodzenia;
     }
 
-    public String getNumer_telefonu() {
-        return numer_telefonu;
+    public String getNr_telefonu() {
+        return nr_telefonu;
     }
 
-    public void setNumer_telefonu(String numer_telefonu) {
-        this.numer_telefonu = numer_telefonu;
+    public void setNr_telefonu(String nr_telefonu) {
+        this.nr_telefonu = nr_telefonu;
     }
 }

@@ -1,6 +1,6 @@
 package com.example.tpo4.views;
 
-import com.example.tpo4.Osoba;
+import com.example.tpo4.models.Osoba;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
@@ -41,7 +41,7 @@ public class DeleteView extends VerticalLayout implements BeforeEnterObserver {
         grid.addColumn(Osoba::getNazwisko).setHeader("Nazwisko");
         grid.addColumn(o -> o.getData_urodzenia() != null ? o.getData_urodzenia().toLocalDate().toString() : "")
                 .setHeader("Data urodzenia");
-        grid.addColumn(Osoba::getNumer_telefonu).setHeader("Numer telefonu");
+        grid.addColumn(Osoba::getNr_telefonu).setHeader("Numer telefonu");
 
         add(grid);
     }
@@ -52,13 +52,13 @@ public class DeleteView extends VerticalLayout implements BeforeEnterObserver {
         if (idParam.isPresent()) {
             id = Integer.parseInt(idParam.get());
 
-            Osoba osoba = webClient.get()
+            Optional<Osoba> osobaOptional = webClient.get()
                     .uri("/data/" + id)
                     .retrieve()
-                    .bodyToMono(Osoba.class)
-                    .block();
+                    .bodyToMono(Osoba.class).blockOptional();
 
-            if (osoba != null) {
+            if (osobaOptional.isPresent()) {
+                Osoba osoba = osobaOptional.get();
                 grid.setItems(osoba);
             } else {
                 Notification.show("Nie znaleziono osoby.");
