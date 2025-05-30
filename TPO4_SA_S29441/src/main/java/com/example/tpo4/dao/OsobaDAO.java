@@ -1,6 +1,5 @@
 package com.example.tpo4.dao;
 
-import com.example.tpo4.exceptions.OsobaNotFoundException;
 import com.example.tpo4.models.Osoba;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -50,8 +49,15 @@ public class OsobaDAO {
 //         else throw new OsobaNotFoundException(id);
     }
 
-    public Osoba save(Osoba osoba) {
+    public Osoba save(Osoba osoba) throws IllegalArgumentException {
         KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        if (osoba.getImie() == null)
+            throw new IllegalArgumentException("Imie must not be null");
+        if (osoba.getNazwisko() == null)
+            throw new IllegalArgumentException("Nazwisko must not be null");
+        if (osoba.getNr_telefonu() == null)
+            throw new IllegalArgumentException("Nr_telefonu must not be null");
 
         jdbcTemplate.update(con -> {
             var ps = con.prepareStatement("INSERT INTO OSOBA (IMIE, NAZWISKO, DATA_URODZENIA, NR_TELEFONU) VALUES (?,?,?,?)", new String[] { "ID" });
@@ -66,7 +72,14 @@ public class OsobaDAO {
     }
 
     public Osoba update(int id, Osoba osoba) {
-        getById(id);
+
+        if (osoba.getImie() == null)
+            throw new IllegalArgumentException("Imie must not be null");
+        if (osoba.getNazwisko() == null)
+            throw new IllegalArgumentException("Nazwisko must not be null");
+        if (osoba.getNr_telefonu() == null)
+            throw new IllegalArgumentException("Nr_telefonu must not be null");
+
         jdbcTemplate.update("UPDATE OSOBA SET IMIE = ?, NAZWISKO = ?, DATA_URODZENIA = ?, NR_TELEFONU = ? WHERE id = ?",
                 osoba.getImie(), osoba.getNazwisko(), osoba.getData_urodzenia(), osoba.getNr_telefonu(), id);
         return getById(id);

@@ -1,6 +1,5 @@
 package com.example.tpo4.controllers;
 
-import com.example.tpo4.exceptions.OsobaNotFoundException;
 import com.example.tpo4.models.Osoba;
 import com.example.tpo4.dao.OsobaDAO;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -33,22 +32,26 @@ public class OsobaController {
     }
 
     @PostMapping("/data")
-    public ResponseEntity<Osoba> create(@RequestBody Osoba osoba) {
+    public ResponseEntity<?> create(@RequestBody Osoba osoba) {
         try {
             Osoba saved = osobaDAO.save(osoba);
             return ResponseEntity.status(HttpStatus.CREATED).body(saved);
         } catch (EmptyResultDataAccessException e) {
             return ResponseEntity.notFound().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @PutMapping("/data/{id}")
-    public ResponseEntity<Osoba> update(@PathVariable int id, @RequestBody Osoba osoba) {
+    public ResponseEntity<?> update(@PathVariable int id, @RequestBody Osoba osoba) {
         try {
             Osoba updated = osobaDAO.update(id, osoba);
             return ResponseEntity.ok(updated);
         } catch (EmptyResultDataAccessException e) {
             return ResponseEntity.notFound().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
